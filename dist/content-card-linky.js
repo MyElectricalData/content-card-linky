@@ -8,10 +8,10 @@ const css = LitElement.prototype.css;
 window.customCards = window.customCards || [];
 window.customCards.push({
     type: "content-card-linky",
-    name: "Carte Enedis1",
+    name: "Carte Enedis",
     description: "Carte pour l'intégration myElectricalData.",
     preview: true,
-    documentationURL: "https://github.com/saniho/content-card-linky",
+    documentationURL: "https://github.com/myElectricalData/content-card-linky",
 });
 const fireEvent = (node, type, detail, options) => {
     options = options || {};
@@ -217,7 +217,7 @@ class ContentCardLinky extends LitElement {
                                         ? html`
                                             <div class="icon-block">
                                                 <span class="linky-icon bigger"
-                                                      style="background: none, url(https://apps.lincs.enedis.fr/mes-prms/assets/images/compteurs/linky.svg) no-repeat; background-size: contain;"></span>
+                                                      style="background: none, url('/local/community/content-card-linky/icons/linky.svg') no-repeat; background-size: contain;"></span>
                                             </div>`
                                         : html``
                                 }
@@ -291,7 +291,7 @@ class ContentCardLinky extends LitElement {
             return html`
                 <div class="icon-block">
                     <span class="linky-icon bigger"
-                          style="background: none, url(https://apps.lincs.enedis.fr/mes-prms/assets/images/compteurs/linky.svg) no-repeat; background-size: contain;"></span>
+                          style="background: none, url('/local/community/content-card-linky/icons/linky.svg') no-repeat; background-size: contain;"></span>
                 </div>`
         } else {
             return html``
@@ -364,7 +364,7 @@ class ContentCardLinky extends LitElement {
                 return html
                     `
                         <div class="week-history">
-                            ${this.renderTitreLigne(config)}
+                            ${this.renderTitleLine(config)}
                             ${daily.slice(0, nbJours).reverse().map((day, index) => this.renderDay(day, nbJours - index, unit_of_measurement, dailyweek, dailyweek_cost, dailyweek_costHC, dailyweek_costHP,
                                     dailyweek_HC, dailyweek_HP, dailyweek_MP, dailyweek_MP_over, dailyweek_MP_time, config))}
                         </div>
@@ -389,10 +389,10 @@ class ContentCardLinky extends LitElement {
             `
     }
 
-    renderDailyWeekTitre(maConfig, monTitre) {
-        if (maConfig === true) {
+    renderDailyWeekTitle(myConfig, myTitle) {
+        if (myConfig === true) {
             return html
-                `${monTitre}<br>
+                `${myTitle}<br>
                 `
         } else {
             return html
@@ -401,20 +401,20 @@ class ContentCardLinky extends LitElement {
         }
     }
 
-    renderTitreLigne(config) {
-        if (this.config.showTitreLigne === true) {
+    renderTitleLine(config) {
+        if (this.config.showTitleLine === true) {
             return html
                 `
                     <div class="day">
-                        ${this.renderDailyWeekTitre(true, "")}
-                        ${this.renderDailyWeekTitre(true, "Conso")}
-                        ${this.renderDailyWeekTitre(this.config.showDayPrice, "Prix")}
-                        ${this.renderDailyWeekTitre(this.config.showDayPriceHCHP, "Prix HC")}
-                        ${this.renderDailyWeekTitre(this.config.showDayPriceHCHP, "Prix HP")}
-                        ${this.renderDailyWeekTitre(this.config.showDayHCHP, "HC")}
-                        ${this.renderDailyWeekTitre(this.config.showDayHCHP, "HP")}
-                        ${this.renderDailyWeekTitre(this.config.showDayMaxPower, "MP")}
-                        ${this.renderDailyWeekTitre(this.config.showDayMaxPowerTime, "MPtime")}
+                        ${this.renderDailyWeekTitle(true, "")}
+                        ${this.renderDailyWeekTitle(true, "Conso")}
+                        ${this.renderDailyWeekTitle(this.config.showDayPrice, "Prix")}
+                        ${this.renderDailyWeekTitle(this.config.showDayPriceHCHP, "Prix HC")}
+                        ${this.renderDailyWeekTitle(this.config.showDayPriceHCHP, "Prix HP")}
+                        ${this.renderDailyWeekTitle(this.config.showDayHCHP, "HC")}
+                        ${this.renderDailyWeekTitle(this.config.showDayHCHP, "HP")}
+                        ${this.renderDailyWeekTitle(this.config.showDayMaxPower, "MP")}
+                        ${this.renderDailyWeekTitle(this.config.showDayMaxPowerTime, "MPtime")}
                     </div>
                 `
         }
@@ -490,7 +490,7 @@ class ContentCardLinky extends LitElement {
                     <br><span class="cons-val">${this.toFloat(day)} 
                   ${this.config.showInTableUnit
                           ? html`
-                              ${unit_of_measurement}`
+                              <span class="unit">${unit_of_measurement}<span>`
                           : html``
                   }</span>
                 `;
@@ -511,7 +511,12 @@ class ContentCardLinky extends LitElement {
             } else {
                 return html
                     `
-                        <br><span class="cons-val">${this.toFloat(valeur)} €</span>
+                        <br><span class="cons-val">${this.toFloat(valeur)} 
+						${this.config.showInTableUnit
+                                ? html`
+                                    <span class="unit">€</span>`
+                                : html``
+                        }</span>
                     `;
             }
         }
@@ -525,7 +530,12 @@ class ContentCardLinky extends LitElement {
             } else {
                 return html
                     `
-                        <br><span class="cons-val">${this.toFloat(valeur, 2)} €</span>
+                        <br><span class="cons-val">${this.toFloat(valeur, 1)} 
+						${this.config.showInTableUnit
+                                ? html`
+                                    <span class="unit">€</span>`
+                                : html``
+                        }</span>
                     `;
             }
         }
@@ -539,10 +549,10 @@ class ContentCardLinky extends LitElement {
             } else {
                 return html
                     `
-                        <br><span class="cons-val">${this.toFloat(valeur, 2)} 
+                        <br><span class="cons-val">${this.toFloat(valeur, 1)} 
            ${this.config.showInTableUnit
                    ? html`
-                       ${unit_of_measurement}`
+                       <span class="unit">${unit_of_measurement}<span>`
                    : html``
            }</span>
                     `;
@@ -560,7 +570,13 @@ class ContentCardLinky extends LitElement {
                 if (over === "true") {
                     return html
                         `
-                            <br><span class="cons-val" style="color:red">${this.toFloat(valeur, 2)}</span>
+                            <br><span class="cons-val" style="color:red">${this.toFloat(valeur, 1)}
+								${this.config.showInTableUnit
+                                        ? html`
+                                            <span class="unit">kW</span>`
+                                        : html``
+                                }</span>
+                            </span>
                             <br><span class="cons-val"
                                       style="color:red">${new Date(MPtime.toString().split(",")[dayNumber - 1]).toLocaleTimeString('fr-FR', {
                                 hour: "2-digit",
@@ -570,7 +586,13 @@ class ContentCardLinky extends LitElement {
                 } else {
                     return html
                         `
-                            <br><span class="cons-val">${this.toFloat(valeur, 2)}</span>
+                            <br><span class="cons-val">${this.toFloat(valeur, 1)}
+								${this.config.showInTableUnit
+                                        ? html`
+                                            <span class="unit">kW</span>`
+                                        : html``
+                                }</span>
+                            </span>
                             <br><span
                                     class="cons-val">${new Date(MPtime.toString().split(",")[dayNumber - 1]).toLocaleTimeString('fr-FR', {
                                 hour: "2-digit",
@@ -746,7 +768,7 @@ class ContentCardLinky extends LitElement {
         if (this.config.showTempo === false) {
             return html``;
         }
-        const tempoInfo = this.hass.states[this.config.tempoEntity];
+        const tempoInfo = this.hass.states[this.config.tempoEntityInfo];
         const tempoJ0 = this.hass.states[this.config.tempoEntityJ0];
         const tempoJ1 = this.hass.states[this.config.tempoEntityJ1];
 
@@ -793,37 +815,7 @@ class ContentCardLinky extends LitElement {
         if (config.kWhPrice && isNaN(config.kWhPrice)) {
             throw new Error('kWhPrice should be a number')
         }
-
-        const defaultConfig = {
-            showHistory: true,
-            showHeader: true,
-            showPeakOffPeak: true,
-            showIcon: false,
-            showInTableUnit: false,
-            showDayPrice: false,
-            showDayPriceHCHP: false,
-            showDayMaxPower: false,
-            showDayHCHP: false,
-            showDayName: "long",
-            showError: true,
-            shoInformation: true,
-            showPrice: true,
-            showTitle: false,
-            showCurrentMonthRatio: true,
-            showMonthRatio: true,
-            showWeekRatio: false,
-            showYesterdayRatio: false,
-            showTitreLigne: false,
-            showEcoWatt: false,
-            showEcoWattJ12: false,
-            showTempo: false,
-            titleName: "",
-            nbJoursAffichage: 7,
-            kWhPrice: undefined,
-        }
-
         this.config = {
-            ...defaultConfig,
             ...config
         };
     }
@@ -1095,11 +1087,14 @@ class ContentCardLinky extends LitElement {
       }
       .tempo-blue {
         color: white;
-	    text-align: center;
+        text-align: center;
+        border-radius: 5px;
         background: var(--label-badge-blue);
     	border: 2px solid var(--divider-color);
     	box-shadow: var(--ha-card-box-shadow,none);
-	    text-transform: capitalize;
+        text-transform: capitalize;
+        font-weight: bold;
+        border-radius: 5px;
       }
       .tempo-white {
         color: #002654;
@@ -1107,7 +1102,9 @@ class ContentCardLinky extends LitElement {
         background: white;
     	border: 2px solid var(--divider-color);
     	box-shadow: var(--ha-card-box-shadow,none);
-	    text-transform: capitalize;
+        text-transform: capitalize;
+        font-weight: bold;
+        border-radius: 5px;
       }
       .tempo-red {
         color: white;
@@ -1116,16 +1113,19 @@ class ContentCardLinky extends LitElement {
     	border: 2px solid var(--divider-color);
     	box-shadow: var(--ha-card-box-shadow,none);
      	text-transform: capitalize;
+     	font-weight: bold;
+     	border-radius: 5px;
       }
       .tempo-grey {
-        color: #002654;
-	    text-align: center;
-        background: grey;
+        color: var(--black-color);
+        text-align: center;
+        background: linear-gradient(45deg, #C0C0C0 12.5%, #DEDEDE 12.5%, #DEDEDE 37.5%, #C0C0C0 37.5%, #C0C0C0 62.5%, #DEDEDE 62.5%, #DEDEDE 87.5%, #C0C0C0 87.5%);
         border: 2px solid var(--divider-color);
         box-shadow: var(--ha-card-box-shadow,none);
-        background-image: linear-gradient(45deg, #d6d6d6 25%, #dedede 25%, #dedede 50%, #d6d6d6 50%, #d6d6d6 75%, #dedede 75%, #dedede 100%);
-        background-size: 28.28px 28.28px;
         text-transform: capitalize;
+        background-size: 20px 20px;
+        font-weight: bold;
+        border-radius: 5px;
       }	  
       `;
     }
