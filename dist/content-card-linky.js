@@ -28,6 +28,7 @@ const fireEvent = (node, type, detail, options) => {
 
 const ecoWattForecastValues = new Map([
   ["Pas de valeur", "green"],
+  [0, "green"],
   [1, "green"],
   [2, "yellow"],
   [3, "red"],
@@ -608,11 +609,14 @@ class ContentCardLinky extends LitElement {
   getOneDayNextEcoWatt(ecoWattForecastEntity) {
     let ecoWattForecastList = [];
     for (let [time, value] of Object.entries(
-      ecoWattForecastEntity.attributes["forecast"]
+      ecoWattForecastEntity.attributes["forecast"] || {}
     )) {
       if (time != undefined) {
-        time = time.replace("h", "").trim();
-        time = time.replace("min", "").trim();
+        // Heure sur deux chiffres quel que soit le format de la cle :
+        // "00 h" (export V1) ou "0h 00min" (export V2)
+        const hour = parseInt(time, 10);
+        if (isNaN(hour)) continue;
+        time = String(hour).padStart(2, "0");
         ecoWattForecastList.push([time, ecoWattForecastValues.get(value), value]);
       }
     }
@@ -706,10 +710,16 @@ class ContentCardLinky extends LitElement {
   } 
   
   getTempoRemainingDays(tempoEntity) {
-	let tempoRemainingRed = tempoEntity.attributes["days_red"];
-	let tempoRemainingWhite = tempoEntity.attributes["days_white"];
-	let tempoRemainingBlue = tempoEntity.attributes["days_blue"];
-    return [tempoRemainingRed, tempoRemainingWhite, tempoRemainingBlue];
+    // Export V1 : "288 / 300". Export V2 : 288, quota dans days_<couleur>_detail
+    const remaining = (color) => {
+      const days = tempoEntity.attributes[`days_${color}`];
+      const quota = tempoEntity.attributes[`days_${color}_detail`]?.quota;
+      if (typeof days === "number" && quota !== undefined) {
+        return `${days} / ${quota}`;
+      }
+      return days;
+    };
+    return [remaining("red"), remaining("white"), remaining("blue")];
   } 
   
   renderTempo(attributes, config) {
